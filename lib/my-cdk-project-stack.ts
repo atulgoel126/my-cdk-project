@@ -5,13 +5,16 @@ import * as path from "path";
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 
 export class MyCdkProjectStack extends Stack {
+
+  endpointPath: string = 'random';
+
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
     const helloWorldLambda = this.createLambda();
     const api = this.createRestApi();
     this.linkAPIGatewayToLambda(helloWorldLambda, api);
     new CfnOutput(this, 'API Endpoint', {
-      value: `${api.url}/hello`,
+      value: `${api.url}/${this.endpointPath}`,
     });
   }
 
@@ -54,7 +57,7 @@ export class MyCdkProjectStack extends Stack {
 
     // Add a resource and method to the API Gateway
     // e.g. GET /hello
-    const helloWorldResource = api.root.addResource('hello');
+    const helloWorldResource = api.root.addResource(this.endpointPath);
     helloWorldResource.addMethod('GET', helloWorldIntegration);
   }
 }
